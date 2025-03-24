@@ -18,6 +18,12 @@ import Loans from "./pages/admin/Loans";
 import Reports from "./pages/admin/Reports";
 import Settings from "./pages/admin/Settings";
 
+// Student pages
+import StudentDashboard from "./pages/student/Dashboard";
+import StudentCatalog from "./pages/student/Catalog";
+import StudentBookDetail from "./pages/student/BookDetail";
+import StudentLoans from "./pages/student/Loans";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -33,38 +39,60 @@ const App = () => (
             
             {/* Protected Admin Routes */}
             <Route path="/admin/dashboard" element={
-              <ProtectedRoute>
+              <ProtectedRoute requiredRole="admin">
                 <Dashboard />
               </ProtectedRoute>
             } />
             <Route path="/admin/books" element={
-              <ProtectedRoute>
+              <ProtectedRoute requiredRole="admin">
                 <Books />
               </ProtectedRoute>
             } />
             <Route path="/admin/books/add" element={
-              <ProtectedRoute>
+              <ProtectedRoute requiredRole="admin">
                 <BookForm />
               </ProtectedRoute>
             } />
             <Route path="/admin/books/edit/:id" element={
-              <ProtectedRoute>
+              <ProtectedRoute requiredRole="admin">
                 <BookForm />
               </ProtectedRoute>
             } />
             <Route path="/admin/loans" element={
-              <ProtectedRoute>
+              <ProtectedRoute requiredRole="admin">
                 <Loans />
               </ProtectedRoute>
             } />
             <Route path="/admin/reports" element={
-              <ProtectedRoute>
+              <ProtectedRoute requiredRole="admin">
                 <Reports />
               </ProtectedRoute>
             } />
             <Route path="/admin/settings" element={
-              <ProtectedRoute>
+              <ProtectedRoute requiredRole="admin">
                 <Settings />
+              </ProtectedRoute>
+            } />
+            
+            {/* Protected Student Routes */}
+            <Route path="/student/dashboard" element={
+              <ProtectedRoute requiredRole="student">
+                <StudentDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/student/catalog" element={
+              <ProtectedRoute requiredRole="student">
+                <StudentCatalog />
+              </ProtectedRoute>
+            } />
+            <Route path="/student/books/:id" element={
+              <ProtectedRoute requiredRole="student">
+                <StudentBookDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/student/loans" element={
+              <ProtectedRoute requiredRole="student">
+                <StudentLoans />
               </ProtectedRoute>
             } />
             
