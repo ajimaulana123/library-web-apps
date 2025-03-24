@@ -1,11 +1,13 @@
 
 import { useState, useEffect } from 'react';
-import { Menu, X, BookOpen, User } from 'lucide-react';
+import { Menu, X, BookOpen, User, LogIn, LogOut } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,6 +21,10 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <header
@@ -38,32 +44,56 @@ const Navbar = () => {
           </div>
           
           <nav className="hidden md:flex space-x-8">
-            <a href="#" className="text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
+            <Link to="/" className="text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
               Home
-            </a>
-            <a href="#" className="text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
+            </Link>
+            <a href="#features" className="text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
               Features
             </a>
             <a href="#" className="text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
-              Pricing
+              Book Catalog
             </a>
             <a href="#" className="text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
-              Contact
+              About Us
             </a>
           </nav>
           
           <div className="hidden md:flex items-center space-x-4">
-            <Link 
-              to="/admin/dashboard"
-              className="text-sm font-medium px-4 py-2 rounded-md transition-colors hover:bg-gray-100 flex items-center"
-            >
-              <BookOpen size={16} className="mr-2" />
-              Librarian Portal
-            </Link>
-            <button className="btn-primary flex items-center">
-              <User size={16} className="mr-2" />
-              Sign up
-            </button>
+            {isAuthenticated ? (
+              <>
+                <Link 
+                  to="/admin/dashboard"
+                  className="text-sm font-medium px-4 py-2 rounded-md transition-colors hover:bg-gray-100 flex items-center"
+                >
+                  <BookOpen size={16} className="mr-2" />
+                  Admin Dashboard
+                </Link>
+                <button 
+                  className="btn-secondary flex items-center"
+                  onClick={handleLogout}
+                >
+                  <LogOut size={16} className="mr-2" />
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link 
+                  to="/admin/dashboard"
+                  className="text-sm font-medium px-4 py-2 rounded-md transition-colors hover:bg-gray-100 flex items-center"
+                >
+                  <BookOpen size={16} className="mr-2" />
+                  Librarian Portal
+                </Link>
+                <Link 
+                  to="/login" 
+                  className="btn-primary flex items-center"
+                >
+                  <LogIn size={16} className="mr-2" />
+                  Sign In
+                </Link>
+              </>
+            )}
           </div>
           
           <div className="md:hidden">
@@ -81,30 +111,76 @@ const Navbar = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white/95 backdrop-blur-sm shadow-sm">
           <div className="container mx-auto px-4 py-4 space-y-4">
-            <a href="#" className="block text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
+            <Link 
+              to="/" 
+              className="block text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               Home
-            </a>
-            <a href="#" className="block text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
+            </Link>
+            <a 
+              href="#features" 
+              className="block text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               Features
             </a>
-            <a href="#" className="block text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
-              Pricing
+            <a 
+              href="#" 
+              className="block text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Book Catalog
             </a>
-            <a href="#" className="block text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
-              Contact
+            <a 
+              href="#" 
+              className="block text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              About Us
             </a>
             <div className="pt-4 flex flex-col space-y-4">
-              <Link 
-                to="/admin/dashboard"
-                className="text-sm font-medium px-4 py-2 rounded-md border border-gray-200 transition-colors hover:bg-gray-100 flex items-center justify-center"
-              >
-                <BookOpen size={16} className="mr-2" />
-                Librarian Portal
-              </Link>
-              <button className="btn-primary flex items-center justify-center">
-                <User size={16} className="mr-2" />
-                Sign up
-              </button>
+              {isAuthenticated ? (
+                <>
+                  <Link 
+                    to="/admin/dashboard"
+                    className="text-sm font-medium px-4 py-2 rounded-md border border-gray-200 transition-colors hover:bg-gray-100 flex items-center justify-center"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <BookOpen size={16} className="mr-2" />
+                    Admin Dashboard
+                  </Link>
+                  <button 
+                    className="btn-secondary flex items-center justify-center"
+                    onClick={() => {
+                      handleLogout();
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    <LogOut size={16} className="mr-2" />
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link 
+                    to="/admin/dashboard"
+                    className="text-sm font-medium px-4 py-2 rounded-md border border-gray-200 transition-colors hover:bg-gray-100 flex items-center justify-center"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <BookOpen size={16} className="mr-2" />
+                    Librarian Portal
+                  </Link>
+                  <Link 
+                    to="/login" 
+                    className="btn-primary flex items-center justify-center"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <LogIn size={16} className="mr-2" />
+                    Sign In
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
