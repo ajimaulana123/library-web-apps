@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -78,7 +77,6 @@ const Settings = () => {
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
 
-  // Profile form
   const profileForm = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
@@ -90,7 +88,6 @@ const Settings = () => {
     },
   });
 
-  // Library settings form
   const libraryForm = useForm<LibraryFormValues>({
     resolver: zodResolver(libraryFormSchema),
     defaultValues: {
@@ -102,7 +99,6 @@ const Settings = () => {
     },
   });
 
-  // Notification settings form
   const notificationForm = useForm<NotificationFormValues>({
     resolver: zodResolver(notificationFormSchema),
     defaultValues: {
@@ -115,7 +111,6 @@ const Settings = () => {
 
   function onProfileSubmit(data: ProfileFormValues) {
     setIsSaving(true);
-    // Simulate API call
     setTimeout(() => {
       setIsSaving(false);
       toast({
@@ -128,7 +123,6 @@ const Settings = () => {
 
   function onLibrarySubmit(data: LibraryFormValues) {
     setIsSaving(true);
-    // Simulate API call
     setTimeout(() => {
       setIsSaving(false);
       toast({
@@ -141,7 +135,6 @@ const Settings = () => {
 
   function onNotificationSubmit(data: NotificationFormValues) {
     setIsSaving(true);
-    // Simulate API call
     setTimeout(() => {
       setIsSaving(false);
       toast({
@@ -171,7 +164,6 @@ const Settings = () => {
             </TabsTrigger>
           </TabsList>
           
-          {/* Profile Tab */}
           <TabsContent value="profile">
             <Card>
               <CardHeader>
@@ -267,7 +259,6 @@ const Settings = () => {
             </Card>
           </TabsContent>
 
-          {/* Library Settings Tab */}
           <TabsContent value="library">
             <Card>
               <CardHeader>
@@ -369,7 +360,6 @@ const Settings = () => {
             </Card>
           </TabsContent>
 
-          {/* Notifications Tab */}
           <TabsContent value="notifications">
             <Card>
               <CardHeader>
@@ -450,7 +440,7 @@ const Settings = () => {
                             <FormItem>
                               <FormLabel>Email Template</FormLabel>
                               <FormDescription>
-                                Template for overdue reminder emails. Use {{student_name}}, {{book_title}}, {{book_author}} as placeholders.
+                                Template for overdue reminder emails. Use {'{{student_name}}'}, {'{{book_title}}'}, {'{{book_author}}'} as placeholders.
                               </FormDescription>
                               <FormControl>
                                 <textarea
