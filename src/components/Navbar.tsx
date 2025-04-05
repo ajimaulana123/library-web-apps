@@ -1,7 +1,8 @@
 
 import { useState, useEffect } from 'react';
 import { Menu, X, BookOpen, User, LogIn, LogOut } from 'lucide-react';
-import { Link, HashLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
 import { useAuth } from '../contexts/AuthContext';
 
 const Navbar = () => {
@@ -47,15 +48,15 @@ const Navbar = () => {
             <Link to="/" className="text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
               Beranda
             </Link>
-            <a href="#features" className="text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
+            <HashLink to="#features" className="text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
               Fitur
-            </a>
-            <a href="#catalog" className="text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
+            </HashLink>
+            <HashLink to="#catalog" className="text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
               Katalog Buku
-            </a>
-            <a href="#about" className="text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
+            </HashLink>
+            <HashLink to="#about" className="text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
               Tentang Kami
-            </a>
+            </HashLink>
           </nav>
           
           <div className="hidden md:flex items-center space-x-4">
@@ -118,27 +119,27 @@ const Navbar = () => {
             >
               Beranda
             </Link>
-            <a 
-              href="#features" 
+            <HashLink 
+              to="#features" 
               className="block text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Fitur
-            </a>
-            <a 
-              href="#catalog" 
+            </HashLink>
+            <HashLink 
+              to="#catalog" 
               className="block text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Katalog Buku
-            </a>
-            <a 
-              href="#about" 
+            </HashLink>
+            <HashLink 
+              to="#about" 
               className="block text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Tentang Kami
-            </a>
+            </HashLink>
             <div className="pt-4 flex flex-col space-y-4">
               {isAuthenticated ? (
                 <>
