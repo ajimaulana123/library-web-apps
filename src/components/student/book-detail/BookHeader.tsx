@@ -1,9 +1,10 @@
 
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { BookCheck, Calendar, BookOpen, Star, BookUser, Users, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 import { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface BookHeaderProps {
   book: {
@@ -24,15 +25,56 @@ interface BookHeaderProps {
 
 export const BookHeader = ({ book }: BookHeaderProps) => {
   const [isRequesting, setIsRequesting] = useState(false);
+  const { user, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   
   // Handle borrow request
   const handleBorrowRequest = () => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    
     setIsRequesting(true);
     
-    // Simulate API call
+    // Simulate API call to create a new loan request
     setTimeout(() => {
+      // Create a new loan request
+      const newLoanRequest = {
+        id: Math.random().toString(36).substr(2, 9),
+        bookId: book.id,
+        book: book.title,
+        author: book.author,
+        coverUrl: book.coverUrl,
+        requestDate: new Date().toISOString().split('T')[0],
+        status: 'pending',
+        estimatedAvailability: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 2 days from now
+        studentId: user?.id,
+        studentName: user?.name || 'Student'
+      };
+      
+      // Store in local storage
+      const existingReservations = JSON.parse(localStorage.getItem('bookReservations') || '[]');
+      localStorage.setItem('bookReservations', JSON.stringify([...existingReservations, newLoanRequest]));
+      
+      // Reduce available copies
+      const booksData = JSON.parse(localStorage.getItem('booksData') || '[]');
+      const updatedBooks = booksData.map((b: any) => {
+        if (b.id === book.id) {
+          const newAvailableCopies = b.availableCopies > 0 ? b.availableCopies - 1 : 0;
+          return {
+            ...b,
+            availableCopies: newAvailableCopies,
+            available: newAvailableCopies > 0
+          };
+        }
+        return b;
+      });
+      localStorage.setItem('booksData', JSON.stringify(updatedBooks));
+      
       setIsRequesting(false);
-      toast.success("Book loan request submitted successfully!");
+      toast.success("Permintaan pinjaman buku berhasil dikirim dan menunggu persetujuan!");
+      navigate('/student/loans');
     }, 1000);
   };
 
@@ -82,9 +124,9 @@ export const BookHeader = ({ book }: BookHeaderProps) => {
                 <Clock size={16} className="text-gray-500 mr-2" />
                 <span className="text-sm">
                   {book.available ? (
-                    <span className="text-green-600">{book.availableCopies} available</span>
+                    <span className="text-green-600">{book.availableCopies} tersedia dari {book.totalCopies} total</span>
                   ) : (
-                    <span className="text-red-600">Unavailable</span>
+                    <span className="text-red-600">Tidak tersedia</span>
                   )}
                 </span>
               </div>
@@ -98,16 +140,16 @@ export const BookHeader = ({ book }: BookHeaderProps) => {
                 className="flex items-center"
               >
                 {isRequesting ? (
-                  <span>Processing...</span>
+                  <span>Memproses...</span>
                 ) : (
                   <>
                     <BookCheck size={16} className="mr-2" />
-                    Request Loan
+                    {book.available ? "Ajukan Peminjaman" : "Tidak Tersedia"}
                   </>
                 )}
               </Button>
               
-              <Button variant="outline">Add to Reading List</Button>
+              <Button variant="outline">Tambahkan ke Daftar Baca</Button>
             </div>
           </div>
         </div>

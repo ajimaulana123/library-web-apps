@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,128 +17,223 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Search, Calendar, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Search, Calendar, CheckCircle2, AlertCircle, Clock, X } from 'lucide-react';
 import { toast } from 'sonner';
-
-// Sample loan data
-const activeLoansSample = [
-  {
-    id: '1',
-    student: 'Emma Watson',
-    studentPhoto: 'https://randomuser.me/api/portraits/women/44.jpg',
-    book: 'To Kill a Mockingbird',
-    bookId: '1',
-    borrowDate: '2023-05-01',
-    dueDate: '2023-05-15',
-    status: 'active'
-  },
-  {
-    id: '2',
-    student: 'John Smith',
-    studentPhoto: 'https://randomuser.me/api/portraits/men/32.jpg',
-    book: 'The Great Gatsby',
-    bookId: '3',
-    borrowDate: '2023-05-03',
-    dueDate: '2023-05-17',
-    status: 'active'
-  },
-  {
-    id: '3',
-    student: 'Sarah Williams',
-    studentPhoto: 'https://randomuser.me/api/portraits/women/67.jpg',
-    book: 'Pride and Prejudice',
-    bookId: '5',
-    borrowDate: '2023-05-05',
-    dueDate: '2023-05-19',
-    status: 'active'
-  }
-];
-
-const overdueLoansSample = [
-  {
-    id: '4',
-    student: 'David Johnson',
-    studentPhoto: 'https://randomuser.me/api/portraits/men/22.jpg',
-    book: '1984',
-    bookId: '2',
-    borrowDate: '2023-04-20',
-    dueDate: '2023-05-04',
-    daysOverdue: 11,
-    status: 'overdue'
-  },
-  {
-    id: '5',
-    student: 'Michael Brown',
-    studentPhoto: 'https://randomuser.me/api/portraits/men/75.jpg',
-    book: 'The Catcher in the Rye',
-    bookId: '6',
-    borrowDate: '2023-04-22',
-    dueDate: '2023-05-06',
-    daysOverdue: 9,
-    status: 'overdue'
-  }
-];
-
-const returnedLoansSample = [
-  {
-    id: '6',
-    student: 'Jennifer Lopez',
-    studentPhoto: 'https://randomuser.me/api/portraits/women/12.jpg',
-    book: 'Harry Potter',
-    bookId: '7',
-    borrowDate: '2023-04-15',
-    dueDate: '2023-04-29',
-    returnDate: '2023-04-27',
-    status: 'returned'
-  },
-  {
-    id: '7',
-    student: 'Robert Davis',
-    studentPhoto: 'https://randomuser.me/api/portraits/men/41.jpg',
-    book: 'The Hobbit',
-    bookId: '8',
-    borrowDate: '2023-04-18',
-    dueDate: '2023-05-02',
-    returnDate: '2023-05-01',
-    status: 'returned'
-  }
-];
 
 const Loans = () => {
   const [activeTab, setActiveTab] = useState('active');
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeLoans, setActiveLoans] = useState<any[]>([]);
+  const [overdueLoans, setOverdueLoans] = useState<any[]>([]);
+  const [returnedLoans, setReturnedLoans] = useState<any[]>([]);
+  const [pendingRequests, setPendingRequests] = useState<any[]>([]);
+  
+  // Load data from localStorage on component mount
+  useEffect(() => {
+    loadData();
+  }, []);
+  
+  const loadData = () => {
+    // Load active loans
+    const storedLoans = JSON.parse(localStorage.getItem('activeLoans') || '[]');
+    
+    // Separate active and overdue loans
+    const today = new Date();
+    const active: any[] = [];
+    const overdue: any[] = [];
+    
+    storedLoans.forEach((loan: any) => {
+      const dueDate = new Date(loan.dueDate);
+      if (dueDate < today) {
+        // Calculate days overdue
+        const diffTime = Math.abs(today.getTime() - dueDate.getTime());
+        const daysOverdue = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        overdue.push({ ...loan, daysOverdue });
+      } else {
+        active.push(loan);
+      }
+    });
+    
+    setActiveLoans(active);
+    setOverdueLoans(overdue);
+    
+    // Load returned loans
+    const storedHistory = JSON.parse(localStorage.getItem('loanHistory') || '[]');
+    setReturnedLoans(storedHistory);
+    
+    // Load pending requests
+    const storedRequests = JSON.parse(localStorage.getItem('bookReservations') || '[]');
+    setPendingRequests(storedRequests.filter((req: any) => req.status === 'pending'));
+  };
   
   // Filter loans based on search
   const filterLoans = (loans: any[]) => {
     if (!searchQuery) return loans;
     
     return loans.filter(loan => 
-      loan.student.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      loan.book.toLowerCase().includes(searchQuery.toLowerCase())
+      loan.student?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      loan.book?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      loan.studentName?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   };
   
-  const filteredActiveLoans = filterLoans(activeLoansSample);
-  const filteredOverdueLoans = filterLoans(overdueLoansSample);
-  const filteredReturnedLoans = filterLoans(returnedLoansSample);
-  
   // Handle return book
   const handleReturnBook = (loanId: string) => {
-    toast.success('Book marked as returned successfully!');
-    // In a real app, you would update the loan status here
+    // Get the loan data
+    const loan = activeLoans.find(l => l.id === loanId) || 
+                overdueLoans.find(l => l.id === loanId);
+    
+    if (!loan) return;
+    
+    // Add to history with return date
+    const returnedLoan = {
+      ...loan,
+      returnDate: new Date().toISOString().split('T')[0],
+      status: 'returned',
+      onTime: new Date(loan.dueDate) >= new Date()
+    };
+    
+    // Add to history
+    const history = JSON.parse(localStorage.getItem('loanHistory') || '[]');
+    localStorage.setItem('loanHistory', JSON.stringify([...history, returnedLoan]));
+    
+    // Remove from active loans
+    const activeLoansData = JSON.parse(localStorage.getItem('activeLoans') || '[]');
+    const updatedActiveLoans = activeLoansData.filter((l: any) => l.id !== loanId);
+    localStorage.setItem('activeLoans', JSON.stringify(updatedActiveLoans));
+    
+    // Update book availability
+    const books = JSON.parse(localStorage.getItem('booksData') || '[]');
+    const updatedBooks = books.map((book: any) => {
+      if (book.id === loan.bookId) {
+        const newAvailableCopies = book.availableCopies + 1;
+        return {
+          ...book,
+          availableCopies: newAvailableCopies,
+          available: newAvailableCopies > 0
+        };
+      }
+      return book;
+    });
+    localStorage.setItem('booksData', JSON.stringify(updatedBooks));
+    
+    // Refresh data
+    loadData();
+    toast.success('Buku berhasil ditandai sebagai dikembalikan!');
   };
   
   // Handle extend loan
   const handleExtendLoan = (loanId: string) => {
-    toast.success('Loan extended for 7 more days!');
-    // In a real app, you would update the due date here
+    // Update due date
+    const activeLoansData = JSON.parse(localStorage.getItem('activeLoans') || '[]');
+    const updatedActiveLoans = activeLoansData.map((loan: any) => {
+      if (loan.id === loanId) {
+        const currentDueDate = new Date(loan.dueDate);
+        currentDueDate.setDate(currentDueDate.getDate() + 7);
+        
+        return {
+          ...loan,
+          dueDate: currentDueDate.toISOString().split('T')[0],
+          canRenew: false
+        };
+      }
+      return loan;
+    });
+    
+    localStorage.setItem('activeLoans', JSON.stringify(updatedActiveLoans));
+    loadData();
+    toast.success('Perpanjangan berhasil untuk 7 hari ke depan!');
   };
   
   // Handle send reminder
   const handleSendReminder = (loanId: string) => {
-    toast.success('Reminder sent to the student!');
-    // In a real app, you would send a notification to the student
+    toast.success('Pengingat telah dikirim ke mahasiswa!');
   };
+  
+  // Handle approve loan request
+  const handleApproveLoan = (requestId: string) => {
+    // Get the request data
+    const request = pendingRequests.find(req => req.id === requestId);
+    if (!request) return;
+    
+    // Move request to active loans
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + 14); // 14 days from now
+    
+    const newLoan = {
+      id: request.id,
+      bookId: request.bookId,
+      book: request.book,
+      author: request.author,
+      coverUrl: request.coverUrl,
+      studentId: request.studentId,
+      student: request.studentName,
+      studentPhoto: 'https://randomuser.me/api/portraits/men/32.jpg', // Default photo
+      borrowDate: new Date().toISOString().split('T')[0],
+      dueDate: dueDate.toISOString().split('T')[0],
+      status: 'active',
+      canRenew: true
+    };
+    
+    // Add to active loans
+    const activeLoansData = JSON.parse(localStorage.getItem('activeLoans') || '[]');
+    localStorage.setItem('activeLoans', JSON.stringify([...activeLoansData, newLoan]));
+    
+    // Update request status to approved
+    const requests = JSON.parse(localStorage.getItem('bookReservations') || '[]');
+    const updatedRequests = requests.map((req: any) => {
+      if (req.id === requestId) {
+        return { ...req, status: 'approved' };
+      }
+      return req;
+    });
+    localStorage.setItem('bookReservations', JSON.stringify(updatedRequests));
+    
+    // Refresh data
+    loadData();
+    toast.success('Permintaan peminjaman berhasil disetujui!');
+  };
+  
+  // Handle reject loan request
+  const handleRejectLoan = (requestId: string) => {
+    // Get the request data to restore book availability
+    const request = pendingRequests.find(req => req.id === requestId);
+    if (!request) return;
+    
+    // Update book availability
+    const books = JSON.parse(localStorage.getItem('booksData') || '[]');
+    const updatedBooks = books.map((book: any) => {
+      if (book.id === request.bookId) {
+        const newAvailableCopies = book.availableCopies + 1;
+        return {
+          ...book,
+          availableCopies: newAvailableCopies,
+          available: newAvailableCopies > 0
+        };
+      }
+      return book;
+    });
+    localStorage.setItem('booksData', JSON.stringify(updatedBooks));
+    
+    // Update request status to rejected
+    const requests = JSON.parse(localStorage.getItem('bookReservations') || '[]');
+    const updatedRequests = requests.map((req: any) => {
+      if (req.id === requestId) {
+        return { ...req, status: 'rejected' };
+      }
+      return req;
+    });
+    localStorage.setItem('bookReservations', JSON.stringify(updatedRequests));
+    
+    // Refresh data
+    loadData();
+    toast.success('Permintaan peminjaman ditolak!');
+  };
+  
+  const filteredActiveLoans = filterLoans(activeLoans);
+  const filteredOverdueLoans = filterLoans(overdueLoans);
+  const filteredReturnedLoans = filterLoans(returnedLoans);
+  const filteredPendingRequests = filterLoans(pendingRequests);
   
   return (
     <AdminLayout title="Loan Management">
@@ -162,10 +257,19 @@ const Loans = () => {
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <Tabs defaultValue="active" onValueChange={setActiveTab} value={activeTab}>
           <div className="px-4 pt-4">
-            <TabsList className="grid w-full max-w-md grid-cols-3">
+            <TabsList className="grid w-full max-w-md grid-cols-4">
+              <TabsTrigger value="pending" className="flex">
+                <Clock size={16} className="mr-2" />
+                Pending
+                {pendingRequests.length > 0 && (
+                  <span className="ml-1 bg-blue-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                    {pendingRequests.length}
+                  </span>
+                )}
+              </TabsTrigger>
               <TabsTrigger value="active" className="flex">
                 <CheckCircle2 size={16} className="mr-2" />
-                Active Loans
+                Active
               </TabsTrigger>
               <TabsTrigger value="overdue" className="flex">
                 <AlertCircle size={16} className="mr-2" />
@@ -177,6 +281,71 @@ const Loans = () => {
               </TabsTrigger>
             </TabsList>
           </div>
+          
+          {/* Pending Requests Tab */}
+          <TabsContent value="pending" className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[200px]">Student</TableHead>
+                  <TableHead>Book</TableHead>
+                  <TableHead>Request Date</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredPendingRequests.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center py-8 text-gray-500">
+                      No pending requests found
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredPendingRequests.map((request) => (
+                    <TableRow key={request.id}>
+                      <TableCell>
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 rounded-full overflow-hidden mr-3 bg-gray-200 flex items-center justify-center">
+                            <span className="text-gray-800 font-medium text-xs">
+                              {request.studentName?.charAt(0) || 'S'}
+                            </span>
+                          </div>
+                          <span className="font-medium">{request.studentName || 'Student'}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>{request.book}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center">
+                          <Calendar size={14} className="mr-1 text-blue-500" />
+                          {request.requestDate}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end space-x-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            className="bg-green-50 text-green-600 border-green-200 hover:bg-green-100"
+                            onClick={() => handleApproveLoan(request.id)}
+                          >
+                            Approve
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            className="bg-red-50 text-red-600 border-red-200 hover:bg-red-100"
+                            onClick={() => handleRejectLoan(request.id)}
+                          >
+                            Reject
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </TabsContent>
           
           {/* Active Loans Tab */}
           <TabsContent value="active" className="p-0">

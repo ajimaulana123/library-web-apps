@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import StudentLayout from '../../components/student/StudentLayout';
 import { Button } from '@/components/ui/button';
@@ -7,9 +6,11 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { BookOpen, Clock, CheckCircle2, ArrowRight, BookCheck, X, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
+import { booksData, Book } from '@/data/booksData';
 
 // Sample loans data
-const loansData = [
+const loansDataSample = [
   {
     id: '1',
     bookId: '5',
@@ -35,7 +36,7 @@ const loansData = [
   }
 ];
 
-const historyData = [
+const historyDataSample = [
   {
     id: '3',
     bookId: '1',
@@ -63,24 +64,43 @@ const historyData = [
   }
 ];
 
-const reservationsData = [
-  {
-    id: '5',
-    bookId: '3',
-    book: 'Pride and Prejudice',
-    author: 'Jane Austen',
-    coverUrl: 'https://images.unsplash.com/photo-1629992101753-56d196c8aabb?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    requestDate: '2023-04-25',
-    status: 'pending',
-    estimatedAvailability: '2023-05-20'
-  }
-];
-
 const Loans = () => {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('active');
-  const [activeLoansList, setActiveLoansList] = useState(loansData);
-  const [reservationsList, setReservationsList] = useState(reservationsData);
+  const [activeLoansList, setActiveLoansList] = useState<any[]>([]);
+  const [reservationsList, setReservationsList] = useState<any[]>([]);
+  const [historyList, setHistoryList] = useState<any[]>([]);
   const [isProcessing, setIsProcessing] = useState<{[key: string]: boolean}>({});
+  
+  // Load data from localStorage on component mount
+  useEffect(() => {
+    // Load books data to localStorage if not present
+    if (!localStorage.getItem('booksData')) {
+      localStorage.setItem('booksData', JSON.stringify(booksData));
+    }
+    
+    // Load active loans
+    const storedLoans = JSON.parse(localStorage.getItem('activeLoans') || '[]');
+    setActiveLoansList(storedLoans.filter((loan: any) => loan.studentId === user?.id));
+    
+    // Load reservation requests
+    const storedReservations = JSON.parse(localStorage.getItem('bookReservations') || '[]');
+    setReservationsList(storedReservations.filter((res: any) => res.studentId === user?.id));
+    
+    // Load history
+    const storedHistory = JSON.parse(localStorage.getItem('loanHistory') || '[]');
+    setHistoryList(storedHistory.filter((hist: any) => hist.studentId === user?.id));
+    
+    if (storedLoans.length === 0) {
+      // For demo purposes, add sample data if empty
+      localStorage.setItem('activeLoans', JSON.stringify(loansDataSample));
+    }
+    
+    if (storedHistory.length === 0) {
+      // For demo purposes, add sample data if empty
+      localStorage.setItem('loanHistory', JSON.stringify(historyDataSample));
+    }
+  }, [user?.id]);
   
   // Calculate days remaining before due date
   const getDaysRemaining = (dueDate: string) => {
@@ -94,10 +114,10 @@ const Loans = () => {
   const handleRenewBook = (loanId: string) => {
     setIsProcessing(prev => ({ ...prev, [loanId]: true }));
     
-    // Simulate API call
     setTimeout(() => {
       // Update the loan with new due date (extend by 14 days)
-      const updatedLoans = activeLoansList.map(loan => {
+      const storedLoans = JSON.parse(localStorage.getItem('activeLoans') || '[]');
+      const updatedLoans = storedLoans.map((loan: any) => {
         if (loan.id === loanId) {
           const currentDueDate = new Date(loan.dueDate);
           currentDueDate.setDate(currentDueDate.getDate() + 14);
@@ -111,7 +131,8 @@ const Loans = () => {
         return loan;
       });
       
-      setActiveLoansList(updatedLoans);
+      localStorage.setItem('activeLoans', JSON.stringify(updatedLoans));
+      setActiveLoansList(updatedLoans.filter((loan: any) => loan.studentId === user?.id));
       setIsProcessing(prev => ({ ...prev, [loanId]: false }));
       toast.success("Perpanjangan peminjaman buku berhasil untuk 14 hari lagi!");
     }, 1000);
@@ -121,14 +142,34 @@ const Loans = () => {
   const handleCancelReservation = (reservationId: string) => {
     setIsProcessing(prev => ({ ...prev, [reservationId]: true }));
     
-    // Simulate API call
     setTimeout(() => {
+      // Get reservation data
+      const storedReservations = JSON.parse(localStorage.getItem('bookReservations') || '[]');
+      const reservation = storedReservations.find((r: any) => r.id === reservationId);
+      
+      // Update book availability if reservation is being canceled
+      if (reservation) {
+        const storedBooks = JSON.parse(localStorage.getItem('booksData') || '[]');
+        const updatedBooks = storedBooks.map((book: any) => {
+          if (book.id === reservation.bookId) {
+            return {
+              ...book,
+              availableCopies: book.availableCopies + 1,
+              available: true
+            };
+          }
+          return book;
+        });
+        localStorage.setItem('booksData', JSON.stringify(updatedBooks));
+      }
+      
       // Remove the reservation from list
-      const updatedReservations = reservationsList.filter(
-        reservation => reservation.id !== reservationId
+      const updatedReservations = storedReservations.filter(
+        (res: any) => res.id !== reservationId
       );
       
-      setReservationsList(updatedReservations);
+      localStorage.setItem('bookReservations', JSON.stringify(updatedReservations));
+      setReservationsList(updatedReservations.filter((res: any) => res.studentId === user?.id));
       setIsProcessing(prev => ({ ...prev, [reservationId]: false }));
       toast.success("Reservasi berhasil dibatalkan!");
     }, 1000);
@@ -285,8 +326,18 @@ const Loans = () => {
                           </div>
                           
                           <div className="mt-1">
-                            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                              {reservation.status === 'pending' ? 'Menunggu Persetujuan' : 'Diproses'}
+                            <span className={`text-xs px-2 py-1 rounded ${
+                              reservation.status === 'pending' 
+                                ? 'bg-blue-100 text-blue-800' 
+                                : reservation.status === 'approved'
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                              {reservation.status === 'pending' 
+                                ? 'Menunggu Persetujuan' 
+                                : reservation.status === 'approved'
+                                ? 'Disetujui' 
+                                : 'Ditolak'}
                             </span>
                           </div>
                           
@@ -304,7 +355,7 @@ const Loans = () => {
                         <Button 
                           variant="outline" 
                           className="w-full justify-between text-red-500 hover:text-red-700 hover:bg-red-50"
-                          disabled={isProcessing[reservation.id]}
+                          disabled={isProcessing[reservation.id] || reservation.status === 'approved'}
                           onClick={() => handleCancelReservation(reservation.id)}
                         >
                           {isProcessing[reservation.id] ? (
@@ -343,7 +394,7 @@ const Loans = () => {
             <p className="text-gray-600 text-sm">Buku yang pernah Anda pinjam dari perpustakaan.</p>
           </div>
           
-          {historyData.length === 0 ? (
+          {historyList.length === 0 ? (
             <div className="bg-gray-50 p-12 rounded-lg text-center">
               <CheckCircle2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900">Tidak ada riwayat peminjaman</h3>
@@ -356,7 +407,7 @@ const Loans = () => {
             </div>
           ) : (
             <div className="grid gap-4">
-              {historyData.map(history => (
+              {historyList.map(history => (
                 <Card key={history.id}>
                   <CardContent className="p-0">
                     <div className="flex flex-col md:flex-row md:items-center">
