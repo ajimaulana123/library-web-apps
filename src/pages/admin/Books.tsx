@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { Button } from '@/components/ui/button';
@@ -127,7 +126,7 @@ const Books = () => {
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
+                <SelectItem value="all_statuses">All Statuses</SelectItem>
                 <SelectItem value="available">Available</SelectItem>
                 <SelectItem value="borrowed">Borrowed</SelectItem>
                 <SelectItem value="reserved">Reserved</SelectItem>
@@ -142,7 +141,7 @@ const Books = () => {
                 <SelectValue placeholder="Genre" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Genres</SelectItem>
+                <SelectItem value="all_genres">All Genres</SelectItem>
                 <SelectItem value="fiction">Fiction</SelectItem>
                 <SelectItem value="science fiction">Science Fiction</SelectItem>
                 <SelectItem value="fantasy">Fantasy</SelectItem>
@@ -158,7 +157,7 @@ const Books = () => {
                 <SelectValue placeholder="Condition" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Conditions</SelectItem>
+                <SelectItem value="all_conditions">All Conditions</SelectItem>
                 <SelectItem value="excellent">Excellent</SelectItem>
                 <SelectItem value="good">Good</SelectItem>
                 <SelectItem value="fair">Fair</SelectItem>

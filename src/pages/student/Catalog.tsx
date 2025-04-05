@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import StudentLayout from '../../components/student/StudentLayout';
@@ -246,7 +245,7 @@ const Catalog = () => {
                   <SelectValue placeholder="All Genres" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Genres</SelectItem>
+                  <SelectItem value="all_genres">All Genres</SelectItem>
                   {allGenres.map(genre => (
                     <SelectItem key={genre} value={genre}>{genre}</SelectItem>
                   ))}
@@ -264,7 +263,7 @@ const Catalog = () => {
                   <SelectValue placeholder="All Books" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Books</SelectItem>
+                  <SelectItem value="all_books">All Books</SelectItem>
                   <SelectItem value="available">Available Only</SelectItem>
                   <SelectItem value="unavailable">Unavailable Only</SelectItem>
                 </SelectContent>
