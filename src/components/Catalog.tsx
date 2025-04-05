@@ -2,6 +2,7 @@
 import { Link } from 'react-router-dom';
 import { BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '../contexts/AuthContext';
 
 // Sample featured books
 const featuredBooks = [
@@ -36,6 +37,21 @@ const featuredBooks = [
 ];
 
 const Catalog = () => {
+  const { user, isAuthenticated } = useAuth();
+  
+  // Function to determine the appropriate catalog link based on user role
+  const getCatalogLink = () => {
+    if (!isAuthenticated) {
+      return "/login";
+    }
+    
+    if (user?.role === "admin" || user?.role === "librarian") {
+      return "/admin/books";
+    }
+    
+    return "/student/catalog";
+  };
+  
   return (
     <section id="catalog" className="py-16 bg-gray-50">
       <div className="section-container">
@@ -69,7 +85,7 @@ const Catalog = () => {
         </div>
         
         <div className="text-center">
-          <Link to="/student/catalog">
+          <Link to={getCatalogLink()}>
             <Button className="px-6">
               <BookOpen size={16} className="mr-2" />
               Lihat Semua Buku
