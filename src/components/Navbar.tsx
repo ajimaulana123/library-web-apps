@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { Menu, X, BookOpen, User, LogIn, LogOut } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, HashLink } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const Navbar = () => {
@@ -37,24 +37,24 @@ const Navbar = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
               <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center">
-                <span className="text-white text-xs font-bold">L</span>
+                <span className="text-white text-xs font-bold">P</span>
               </div>
-              <span className="ml-2 text-lg font-medium">Library</span>
+              <span className="ml-2 text-lg font-medium">Perpustakaan</span>
             </Link>
           </div>
           
           <nav className="hidden md:flex space-x-8">
             <Link to="/" className="text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
-              Home
+              Beranda
             </Link>
             <a href="#features" className="text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
-              Features
+              Fitur
             </a>
-            <a href="#" className="text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
-              Book Catalog
+            <a href="#catalog" className="text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
+              Katalog Buku
             </a>
-            <a href="#" className="text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
-              About Us
+            <a href="#about" className="text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors">
+              Tentang Kami
             </a>
           </nav>
           
@@ -66,14 +66,14 @@ const Navbar = () => {
                   className="text-sm font-medium px-4 py-2 rounded-md transition-colors hover:bg-gray-100 flex items-center"
                 >
                   <BookOpen size={16} className="mr-2" />
-                  Admin Dashboard
+                  Dasbor Admin
                 </Link>
                 <button 
                   className="btn-secondary flex items-center"
                   onClick={handleLogout}
                 >
                   <LogOut size={16} className="mr-2" />
-                  Logout
+                  Keluar
                 </button>
               </>
             ) : (
@@ -83,14 +83,14 @@ const Navbar = () => {
                   className="text-sm font-medium px-4 py-2 rounded-md transition-colors hover:bg-gray-100 flex items-center"
                 >
                   <BookOpen size={16} className="mr-2" />
-                  Librarian Portal
+                  Portal Pustakawan
                 </Link>
                 <Link 
                   to="/login" 
                   className="btn-primary flex items-center"
                 >
                   <LogIn size={16} className="mr-2" />
-                  Sign In
+                  Masuk
                 </Link>
               </>
             )}
@@ -116,28 +116,28 @@ const Navbar = () => {
               className="block text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              Home
+              Beranda
             </Link>
             <a 
               href="#features" 
               className="block text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              Features
+              Fitur
             </a>
             <a 
-              href="#" 
+              href="#catalog" 
               className="block text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              Book Catalog
+              Katalog Buku
             </a>
             <a 
-              href="#" 
+              href="#about" 
               className="block text-sm font-medium text-gray-700 hover:text-blue-500 transition-colors"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              About Us
+              Tentang Kami
             </a>
             <div className="pt-4 flex flex-col space-y-4">
               {isAuthenticated ? (
@@ -148,7 +148,7 @@ const Navbar = () => {
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <BookOpen size={16} className="mr-2" />
-                    Admin Dashboard
+                    Dasbor Admin
                   </Link>
                   <button 
                     className="btn-secondary flex items-center justify-center"
@@ -158,7 +158,7 @@ const Navbar = () => {
                     }}
                   >
                     <LogOut size={16} className="mr-2" />
-                    Logout
+                    Keluar
                   </button>
                 </>
               ) : (
@@ -169,7 +169,7 @@ const Navbar = () => {
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <BookOpen size={16} className="mr-2" />
-                    Librarian Portal
+                    Portal Pustakawan
                   </Link>
                   <Link 
                     to="/login" 
@@ -177,7 +177,7 @@ const Navbar = () => {
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <LogIn size={16} className="mr-2" />
-                    Sign In
+                    Masuk
                   </Link>
                 </>
               )}
