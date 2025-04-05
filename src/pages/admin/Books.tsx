@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { Button } from '@/components/ui/button';
@@ -41,69 +42,69 @@ const sampleBooks = [
     id: '1',
     title: 'To Kill a Mockingbird',
     author: 'Harper Lee',
-    genre: 'Fiction',
-    status: 'Available',
-    condition: 'Good',
+    genre: 'Fiksi',
+    status: 'Tersedia',
+    condition: 'Baik',
     coverUrl: 'https://m.media-amazon.com/images/I/71FxgtFKcQL._AC_UF1000,1000_QL80_.jpg'
   },
   {
     id: '2',
     title: '1984',
     author: 'George Orwell',
-    genre: 'Science Fiction',
-    status: 'Borrowed',
-    condition: 'Fair',
+    genre: 'Fiksi Ilmiah',
+    status: 'Dipinjam',
+    condition: 'Cukup',
     coverUrl: 'https://m.media-amazon.com/images/I/71kxa1-0mfL._AC_UF1000,1000_QL80_.jpg'
   },
   {
     id: '3',
     title: 'The Great Gatsby',
     author: 'F. Scott Fitzgerald',
-    genre: 'Fiction',
-    status: 'Available',
-    condition: 'Excellent',
+    genre: 'Fiksi',
+    status: 'Tersedia',
+    condition: 'Sangat Baik',
     coverUrl: 'https://m.media-amazon.com/images/I/71FTb9X6wsL._AC_UF1000,1000_QL80_.jpg'
   },
   {
     id: '4',
     title: 'Harry Potter and the Philosopher\'s Stone',
     author: 'J.K. Rowling',
-    genre: 'Fantasy',
-    status: 'Borrowed',
-    condition: 'Good',
+    genre: 'Fantasi',
+    status: 'Dipinjam',
+    condition: 'Baik',
     coverUrl: 'https://m.media-amazon.com/images/I/81iqZ2HHD-L._AC_UF1000,1000_QL80_.jpg'
   },
   {
     id: '5',
     title: 'The Hobbit',
     author: 'J.R.R. Tolkien',
-    genre: 'Fantasy',
-    status: 'Available',
-    condition: 'Good',
+    genre: 'Fantasi',
+    status: 'Tersedia',
+    condition: 'Baik',
     coverUrl: 'https://m.media-amazon.com/images/I/91b0C2YNSrL._AC_UF1000,1000_QL80_.jpg'
   }
 ];
 
 const Books = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [genreFilter, setGenreFilter] = useState('all');
-  const [conditionFilter, setConditionFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all_statuses');
+  const [genreFilter, setGenreFilter] = useState('all_genres');
+  const [conditionFilter, setConditionFilter] = useState('all_conditions');
   
   // Filter books based on search and filters
   const filteredBooks = sampleBooks.filter(book => {
     const matchesSearch = book.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                          book.author.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesStatus = statusFilter === 'all' || book.status.toLowerCase() === statusFilter.toLowerCase();
-    const matchesGenre = genreFilter === 'all' || book.genre.toLowerCase() === genreFilter.toLowerCase();
-    const matchesCondition = conditionFilter === 'all' || book.condition.toLowerCase() === conditionFilter.toLowerCase();
+    const matchesStatus = statusFilter === 'all_statuses' || book.status.toLowerCase() === statusFilter.toLowerCase();
+    const matchesGenre = genreFilter === 'all_genres' || book.genre.toLowerCase() === genreFilter.toLowerCase();
+    const matchesCondition = conditionFilter === 'all_conditions' || book.condition.toLowerCase() === conditionFilter.toLowerCase();
     
     return matchesSearch && matchesStatus && matchesGenre && matchesCondition;
   });
 
   return (
-    <AdminLayout title="Book Management">
+    <AdminLayout title="Manajemen Buku">
       {/* Search & Filters */}
       <div className="mb-8 bg-white p-4 rounded-lg shadow">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
@@ -113,7 +114,7 @@ const Books = () => {
             </div>
             <Input
               type="search"
-              placeholder="Search books by title or author..."
+              placeholder="Cari buku berdasarkan judul atau penulis..."
               className="pl-10"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -126,11 +127,11 @@ const Books = () => {
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all_statuses">All Statuses</SelectItem>
-                <SelectItem value="available">Available</SelectItem>
-                <SelectItem value="borrowed">Borrowed</SelectItem>
-                <SelectItem value="reserved">Reserved</SelectItem>
-                <SelectItem value="lost">Lost/Damaged</SelectItem>
+                <SelectItem value="all_statuses">Semua Status</SelectItem>
+                <SelectItem value="tersedia">Tersedia</SelectItem>
+                <SelectItem value="dipinjam">Dipinjam</SelectItem>
+                <SelectItem value="dipesan">Dipesan</SelectItem>
+                <SelectItem value="hilang">Hilang/Rusak</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -141,12 +142,12 @@ const Books = () => {
                 <SelectValue placeholder="Genre" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all_genres">All Genres</SelectItem>
-                <SelectItem value="fiction">Fiction</SelectItem>
-                <SelectItem value="science fiction">Science Fiction</SelectItem>
-                <SelectItem value="fantasy">Fantasy</SelectItem>
-                <SelectItem value="non-fiction">Non-Fiction</SelectItem>
-                <SelectItem value="biography">Biography</SelectItem>
+                <SelectItem value="all_genres">Semua Genre</SelectItem>
+                <SelectItem value="fiksi">Fiksi</SelectItem>
+                <SelectItem value="fiksi ilmiah">Fiksi Ilmiah</SelectItem>
+                <SelectItem value="fantasi">Fantasi</SelectItem>
+                <SelectItem value="non-fiksi">Non-Fiksi</SelectItem>
+                <SelectItem value="biografi">Biografi</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -154,14 +155,14 @@ const Books = () => {
           <div>
             <Select value={conditionFilter} onValueChange={setConditionFilter}>
               <SelectTrigger>
-                <SelectValue placeholder="Condition" />
+                <SelectValue placeholder="Kondisi" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all_conditions">All Conditions</SelectItem>
-                <SelectItem value="excellent">Excellent</SelectItem>
-                <SelectItem value="good">Good</SelectItem>
-                <SelectItem value="fair">Fair</SelectItem>
-                <SelectItem value="poor">Poor</SelectItem>
+                <SelectItem value="all_conditions">Semua Kondisi</SelectItem>
+                <SelectItem value="sangat baik">Sangat Baik</SelectItem>
+                <SelectItem value="baik">Baik</SelectItem>
+                <SelectItem value="cukup">Cukup</SelectItem>
+                <SelectItem value="buruk">Buruk</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -173,13 +174,13 @@ const Books = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[80px]">Cover</TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead>Author</TableHead>
+              <TableHead className="w-[80px]">Sampul</TableHead>
+              <TableHead>Judul</TableHead>
+              <TableHead>Penulis</TableHead>
               <TableHead>Genre</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Condition</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>Kondisi</TableHead>
+              <TableHead className="text-right">Aksi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -189,7 +190,7 @@ const Books = () => {
                   <div className="w-12 h-16 bg-gray-100 rounded overflow-hidden">
                     <img 
                       src={book.coverUrl} 
-                      alt={`Cover of ${book.title}`} 
+                      alt={`Sampul ${book.title}`} 
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -199,9 +200,9 @@ const Books = () => {
                 <TableCell>{book.genre}</TableCell>
                 <TableCell>
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    book.status === 'Available' ? 'bg-green-100 text-green-800' :
-                    book.status === 'Borrowed' ? 'bg-blue-100 text-blue-800' :
-                    book.status === 'Reserved' ? 'bg-yellow-100 text-yellow-800' : 
+                    book.status === 'Tersedia' ? 'bg-green-100 text-green-800' :
+                    book.status === 'Dipinjam' ? 'bg-blue-100 text-blue-800' :
+                    book.status === 'Dipesan' ? 'bg-yellow-100 text-yellow-800' : 
                     'bg-red-100 text-red-800'
                   }`}>
                     {book.status}
@@ -229,7 +230,7 @@ const Books = () => {
       {/* Pagination */}
       <div className="flex justify-between items-center">
         <p className="text-sm text-gray-500">
-          Showing <span className="font-medium">1</span> to <span className="font-medium">{filteredBooks.length}</span> of <span className="font-medium">{sampleBooks.length}</span> books
+          Menampilkan <span className="font-medium">1</span> hingga <span className="font-medium">{filteredBooks.length}</span> dari <span className="font-medium">{sampleBooks.length}</span> buku
         </p>
         
         <Pagination>

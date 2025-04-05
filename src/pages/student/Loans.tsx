@@ -113,7 +113,7 @@ const Loans = () => {
       
       setActiveLoansList(updatedLoans);
       setIsProcessing(prev => ({ ...prev, [loanId]: false }));
-      toast.success("Book loan successfully renewed for 14 more days!");
+      toast.success("Perpanjangan peminjaman buku berhasil untuk 14 hari lagi!");
     }, 1000);
   };
   
@@ -130,43 +130,43 @@ const Loans = () => {
       
       setReservationsList(updatedReservations);
       setIsProcessing(prev => ({ ...prev, [reservationId]: false }));
-      toast.success("Reservation cancelled successfully!");
+      toast.success("Reservasi berhasil dibatalkan!");
     }, 1000);
   };
   
   return (
-    <StudentLayout title="My Loans">
+    <StudentLayout title="Peminjaman Saya">
       <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full max-w-md grid-cols-3 mb-6">
           <TabsTrigger value="active" className="flex">
             <BookOpen size={16} className="mr-2" />
-            Current Loans
+            Peminjaman Aktif
           </TabsTrigger>
           <TabsTrigger value="reservations" className="flex">
             <Clock size={16} className="mr-2" />
-            Reservations
+            Reservasi
           </TabsTrigger>
           <TabsTrigger value="history" className="flex">
             <CheckCircle2 size={16} className="mr-2" />
-            History
+            Riwayat
           </TabsTrigger>
         </TabsList>
         
         {/* Current Loans Tab */}
         <TabsContent value="active">
           <div className="mb-4">
-            <h2 className="text-lg font-semibold mb-1">Your Current Loans</h2>
-            <p className="text-gray-600 text-sm">Books you currently have checked out from the library.</p>
+            <h2 className="text-lg font-semibold mb-1">Peminjaman Aktif Anda</h2>
+            <p className="text-gray-600 text-sm">Buku yang saat ini Anda pinjam dari perpustakaan.</p>
           </div>
           
           {activeLoansList.length === 0 ? (
             <div className="bg-gray-50 p-12 rounded-lg text-center">
               <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900">No active loans</h3>
-              <p className="mt-2 text-gray-500">You don't have any books checked out at the moment.</p>
+              <h3 className="text-lg font-medium text-gray-900">Tidak ada peminjaman aktif</h3>
+              <p className="mt-2 text-gray-500">Anda belum meminjam buku saat ini.</p>
               <Link to="/student/catalog">
                 <Button className="mt-4">
-                  Browse Catalog
+                  Jelajahi Katalog
                 </Button>
               </Link>
             </div>
@@ -192,16 +192,16 @@ const Loans = () => {
                             <p className="text-sm text-gray-600">{loan.author}</p>
                             
                             <div className="mt-2 text-xs text-gray-500">
-                              Borrowed: {loan.borrowDate}
+                              Dipinjam: {loan.borrowDate}
                             </div>
                             
                             <div className="mt-1">
-                              <span className="text-xs text-gray-500">Due: </span>
+                              <span className="text-xs text-gray-500">Tenggat: </span>
                               <span className={`text-sm font-medium ${isOverdue ? 'text-red-600' : ''}`}>
                                 {loan.dueDate}
                                 {isOverdue 
-                                  ? ` (Overdue by ${Math.abs(daysRemaining)} days)` 
-                                  : ` (${daysRemaining} days left)`}
+                                  ? ` (Terlambat ${Math.abs(daysRemaining)} hari)` 
+                                  : ` (${daysRemaining} hari lagi)`}
                               </span>
                             </div>
                           </div>
@@ -216,11 +216,11 @@ const Loans = () => {
                             onClick={() => handleRenewBook(loan.id)}
                           >
                             {isProcessing[loan.id] ? (
-                              <span>Processing...</span>
+                              <span>Memproses...</span>
                             ) : (
                               <>
                                 <RefreshCw size={14} className="mr-2" /> 
-                                Renew Loan
+                                Perpanjang Pinjaman
                               </>
                             )}
                             <ArrowRight size={14} />
@@ -230,7 +230,7 @@ const Loans = () => {
                             <Button variant="ghost" className="w-full justify-between">
                               <span className="flex items-center">
                                 <BookCheck size={14} className="mr-2" />
-                                Book Details
+                                Detail Buku
                               </span>
                               <ArrowRight size={14} />
                             </Button>
@@ -248,18 +248,18 @@ const Loans = () => {
         {/* Reservations Tab */}
         <TabsContent value="reservations">
           <div className="mb-4">
-            <h2 className="text-lg font-semibold mb-1">Your Reservations</h2>
-            <p className="text-gray-600 text-sm">Books you have requested to borrow when they become available.</p>
+            <h2 className="text-lg font-semibold mb-1">Reservasi Anda</h2>
+            <p className="text-gray-600 text-sm">Buku yang telah Anda pesan untuk dipinjam saat tersedia.</p>
           </div>
           
           {reservationsList.length === 0 ? (
             <div className="bg-gray-50 p-12 rounded-lg text-center">
               <Clock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900">No active reservations</h3>
-              <p className="mt-2 text-gray-500">You don't have any pending book requests.</p>
+              <h3 className="text-lg font-medium text-gray-900">Tidak ada reservasi aktif</h3>
+              <p className="mt-2 text-gray-500">Anda belum memiliki permintaan buku tertunda.</p>
               <Link to="/student/catalog">
                 <Button className="mt-4">
-                  Browse Catalog
+                  Jelajahi Katalog
                 </Button>
               </Link>
             </div>
@@ -281,18 +281,18 @@ const Loans = () => {
                           <p className="text-sm text-gray-600">{reservation.author}</p>
                           
                           <div className="mt-2 text-xs text-gray-500">
-                            Requested: {reservation.requestDate}
+                            Diminta: {reservation.requestDate}
                           </div>
                           
                           <div className="mt-1">
                             <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                              {reservation.status === 'pending' ? 'Pending Approval' : 'Processing'}
+                              {reservation.status === 'pending' ? 'Menunggu Persetujuan' : 'Diproses'}
                             </span>
                           </div>
                           
                           {reservation.estimatedAvailability && (
                             <div className="mt-2 text-sm">
-                              <span className="text-xs text-gray-500">Est. Availability: </span>
+                              <span className="text-xs text-gray-500">Est. Ketersediaan: </span>
                               <span className="font-medium">{reservation.estimatedAvailability}</span>
                             </div>
                           )}
@@ -308,11 +308,11 @@ const Loans = () => {
                           onClick={() => handleCancelReservation(reservation.id)}
                         >
                           {isProcessing[reservation.id] ? (
-                            <span>Processing...</span>
+                            <span>Memproses...</span>
                           ) : (
                             <>
                               <X size={14} className="mr-2" /> 
-                              Cancel Request
+                              Batalkan Permintaan
                             </>
                           )}
                           <ArrowRight size={14} />
@@ -322,7 +322,7 @@ const Loans = () => {
                           <Button variant="ghost" className="w-full justify-between">
                             <span className="flex items-center">
                               <BookCheck size={14} className="mr-2" />
-                              Book Details
+                              Detail Buku
                             </span>
                             <ArrowRight size={14} />
                           </Button>
@@ -339,18 +339,18 @@ const Loans = () => {
         {/* History Tab */}
         <TabsContent value="history">
           <div className="mb-4">
-            <h2 className="text-lg font-semibold mb-1">Your Loan History</h2>
-            <p className="text-gray-600 text-sm">Previous books you've borrowed from the library.</p>
+            <h2 className="text-lg font-semibold mb-1">Riwayat Peminjaman Anda</h2>
+            <p className="text-gray-600 text-sm">Buku yang pernah Anda pinjam dari perpustakaan.</p>
           </div>
           
           {historyData.length === 0 ? (
             <div className="bg-gray-50 p-12 rounded-lg text-center">
               <CheckCircle2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900">No loan history</h3>
-              <p className="mt-2 text-gray-500">You haven't borrowed any books yet.</p>
+              <h3 className="text-lg font-medium text-gray-900">Tidak ada riwayat peminjaman</h3>
+              <p className="mt-2 text-gray-500">Anda belum pernah meminjam buku sebelumnya.</p>
               <Link to="/student/catalog">
                 <Button className="mt-4">
-                  Browse Catalog
+                  Jelajahi Katalog
                 </Button>
               </Link>
             </div>
@@ -373,24 +373,24 @@ const Loans = () => {
                           
                           <div className="flex flex-wrap gap-2 mt-2">
                             <div className="text-xs text-gray-500">
-                              Borrowed: {history.borrowDate}
+                              Dipinjam: {history.borrowDate}
                             </div>
                             <div className="text-xs text-gray-500">
-                              Due: {history.dueDate}
+                              Tenggat: {history.dueDate}
                             </div>
                             <div className="text-xs text-gray-500">
-                              Returned: {history.returnDate}
+                              Dikembalikan: {history.returnDate}
                             </div>
                           </div>
                           
                           <div className="mt-2">
                             {history.onTime ? (
                               <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                                Returned on time
+                                Dikembalikan tepat waktu
                               </span>
                             ) : (
                               <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">
-                                {history.daysLate} days late
+                                Terlambat {history.daysLate} hari
                               </span>
                             )}
                           </div>
@@ -403,7 +403,7 @@ const Loans = () => {
                           <Button variant="outline" className="w-full justify-between">
                             <span className="flex items-center">
                               <BookCheck size={14} className="mr-2" />
-                              Book Details
+                              Detail Buku
                             </span>
                             <ArrowRight size={14} />
                           </Button>
@@ -412,7 +412,7 @@ const Loans = () => {
                         <Button variant="ghost" className="w-full justify-between">
                           <span className="flex items-center">
                             <RefreshCw size={14} className="mr-2" />
-                            Borrow Again
+                            Pinjam Lagi
                           </span>
                           <ArrowRight size={14} />
                         </Button>

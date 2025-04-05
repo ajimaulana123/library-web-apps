@@ -14,7 +14,7 @@ const recentBooks = [
     title: 'To Kill a Mockingbird',
     author: 'Harper Lee',
     coverUrl: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    genre: 'Fiction',
+    genre: 'Fiksi',
     available: true
   },
   {
@@ -22,7 +22,7 @@ const recentBooks = [
     title: '1984',
     author: 'George Orwell',
     coverUrl: 'https://images.unsplash.com/photo-1532012197267-da84d127e765?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    genre: 'Science Fiction',
+    genre: 'Fiksi Ilmiah',
     available: true
   },
   {
@@ -30,7 +30,7 @@ const recentBooks = [
     title: 'Pride and Prejudice',
     author: 'Jane Austen',
     coverUrl: 'https://images.unsplash.com/photo-1629992101753-56d196c8aabb?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    genre: 'Romance',
+    genre: 'Romansa',
     available: false
   },
   {
@@ -38,7 +38,7 @@ const recentBooks = [
     title: 'The Great Gatsby',
     author: 'F. Scott Fitzgerald',
     coverUrl: 'https://images.unsplash.com/photo-1541963463532-d68292c34b19?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    genre: 'Fiction',
+    genre: 'Fiksi',
     available: true
   }
 ];
@@ -69,13 +69,13 @@ const Dashboard = () => {
   const { user } = useAuth();
   
   return (
-    <StudentLayout title="Student Dashboard">
+    <StudentLayout title="Dasbor Siswa">
       <div className="grid gap-6">
         {/* Welcome Message */}
         <div className="bg-blue-50 border border-blue-100 rounded-lg p-6">
-          <h2 className="text-xl font-semibold mb-2">Welcome, {user?.name || 'Student'}!</h2>
+          <h2 className="text-xl font-semibold mb-2">Selamat datang, {user?.name || 'Siswa'}!</h2>
           <p className="text-gray-600">
-            Here's an overview of your library activities. You currently have {currentLoans.length} books borrowed.
+            Berikut adalah ringkasan aktivitas perpustakaan Anda. Saat ini Anda meminjam {currentLoans.length} buku.
           </p>
         </div>
         
@@ -83,7 +83,7 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-500">Current Loans</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-500">Peminjaman Saat Ini</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center">
@@ -95,7 +95,7 @@ const Dashboard = () => {
           
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-500">Overdue Books</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-500">Buku Terlambat</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center">
@@ -107,7 +107,7 @@ const Dashboard = () => {
           
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-500">Reading History</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-500">Riwayat Bacaan</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center">
@@ -119,7 +119,7 @@ const Dashboard = () => {
           
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-500">Days Until Next Due</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-500">Hari Hingga Tenggat</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center">
@@ -133,18 +133,18 @@ const Dashboard = () => {
         {/* Current Loans Section */}
         <div>
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold">Your Current Loans</h2>
+            <h2 className="text-lg font-semibold">Peminjaman Anda Saat Ini</h2>
             <Link to="/student/loans">
-              <Button variant="outline" size="sm">View All</Button>
+              <Button variant="outline" size="sm">Lihat Semua</Button>
             </Link>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {currentLoans.length === 0 ? (
               <div className="col-span-2 bg-gray-50 p-8 rounded-lg text-center">
-                <p className="text-gray-500">You don't have any books borrowed at the moment.</p>
+                <p className="text-gray-500">Anda tidak memiliki buku yang dipinjam saat ini.</p>
                 <Link to="/student/catalog">
-                  <Button className="mt-4">Browse Catalog</Button>
+                  <Button className="mt-4">Jelajahi Katalog</Button>
                 </Link>
               </div>
             ) : (
@@ -158,9 +158,9 @@ const Dashboard = () => {
                       <h3 className="font-semibold">{loan.book}</h3>
                       <p className="text-sm text-gray-600">{loan.author}</p>
                       <div className="flex flex-col mt-2">
-                        <span className="text-xs text-gray-500">Due Date:</span>
+                        <span className="text-xs text-gray-500">Tenggat:</span>
                         <span className={`text-sm ${loan.status === 'overdue' ? 'text-red-600 font-medium' : ''}`}>
-                          {loan.dueDate} {loan.status === 'overdue' && '(Overdue)'}
+                          {loan.dueDate} {loan.status === 'overdue' && '(Terlambat)'}
                         </span>
                       </div>
                     </div>
@@ -174,9 +174,9 @@ const Dashboard = () => {
         {/* Recently Added Books */}
         <div>
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold">Recently Added to Library</h2>
+            <h2 className="text-lg font-semibold">Baru Ditambahkan ke Perpustakaan</h2>
             <Link to="/student/catalog">
-              <Button variant="outline" size="sm">View Catalog</Button>
+              <Button variant="outline" size="sm">Lihat Katalog</Button>
             </Link>
           </div>
           
@@ -193,9 +193,9 @@ const Dashboard = () => {
                     <div className="flex justify-between items-center mt-2">
                       <span className="text-xs bg-gray-100 px-2 py-1 rounded">{book.genre}</span>
                       {book.available ? (
-                        <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Available</span>
+                        <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Tersedia</span>
                       ) : (
-                        <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">Unavailable</span>
+                        <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">Tidak Tersedia</span>
                       )}
                     </div>
                   </div>
@@ -212,8 +212,8 @@ const Dashboard = () => {
               <div className="flex items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
                 <BookPlus className="h-10 w-10 text-blue-500 mr-4" />
                 <div>
-                  <h3 className="font-semibold">Browse Catalog</h3>
-                  <p className="text-sm text-gray-600">Discover new books to borrow</p>
+                  <h3 className="font-semibold">Jelajahi Katalog</h3>
+                  <p className="text-sm text-gray-600">Temukan buku baru untuk dipinjam</p>
                 </div>
               </div>
             </Link>
@@ -222,8 +222,8 @@ const Dashboard = () => {
               <div className="flex items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
                 <BookOpen className="h-10 w-10 text-green-500 mr-4" />
                 <div>
-                  <h3 className="font-semibold">Manage Loans</h3>
-                  <p className="text-sm text-gray-600">View and manage your borrowed books</p>
+                  <h3 className="font-semibold">Kelola Peminjaman</h3>
+                  <p className="text-sm text-gray-600">Lihat dan kelola buku yang Anda pinjam</p>
                 </div>
               </div>
             </Link>
@@ -231,8 +231,8 @@ const Dashboard = () => {
             <div className="flex items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
               <BookMarked className="h-10 w-10 text-purple-500 mr-4" />
               <div>
-                <h3 className="font-semibold">Reading History</h3>
-                <p className="text-sm text-gray-600">View your past reading activity</p>
+                <h3 className="font-semibold">Riwayat Bacaan</h3>
+                <p className="text-sm text-gray-600">Lihat aktivitas bacaan Anda sebelumnya</p>
               </div>
             </div>
           </div>

@@ -50,9 +50,9 @@ const StudentLayout = ({ children, title }: StudentLayoutProps) => {
             <div className="flex items-center">
               <Link to="/student/dashboard" className="flex items-center">
                 <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center mr-2">
-                  <span className="text-white text-xs font-bold">L</span>
+                  <span className="text-white text-xs font-bold">P</span>
                 </div>
-                <span className="text-lg font-medium hidden sm:inline">Library System</span>
+                <span className="text-lg font-medium hidden sm:inline">Sistem Perpustakaan</span>
               </Link>
             </div>
 
@@ -65,7 +65,7 @@ const StudentLayout = ({ children, title }: StudentLayoutProps) => {
                 <Input
                   type="search"
                   className="pl-10 w-full"
-                  placeholder="Search for books..."
+                  placeholder="Cari buku..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -79,21 +79,21 @@ const StudentLayout = ({ children, title }: StudentLayoutProps) => {
                 className={`text-sm font-medium ${isActive('/student/dashboard') ? 'text-blue-500' : 'text-gray-700 hover:text-blue-500'} transition-colors flex items-center gap-1`}
               >
                 <Home size={16} />
-                Dashboard
+                Beranda
               </Link>
               <Link 
                 to="/student/catalog" 
                 className={`text-sm font-medium ${isActive('/student/catalog') ? 'text-blue-500' : 'text-gray-700 hover:text-blue-500'} transition-colors flex items-center gap-1`}
               >
                 <Book size={16} />
-                Catalog
+                Katalog
               </Link>
               <Link 
                 to="/student/loans" 
                 className={`text-sm font-medium ${isActive('/student/loans') ? 'text-blue-500' : 'text-gray-700 hover:text-blue-500'} transition-colors flex items-center gap-1`}
               >
                 <FileText size={16} />
-                My Loans
+                Peminjaman Saya
               </Link>
             </nav>
 
@@ -104,7 +104,7 @@ const StudentLayout = ({ children, title }: StudentLayoutProps) => {
                   <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-2">
                     <User size={16} />
                   </div>
-                  <span className="hidden sm:inline">{user?.name || 'Student'}</span>
+                  <span className="hidden sm:inline">{user?.name || 'Siswa'}</span>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -115,19 +115,19 @@ const StudentLayout = ({ children, title }: StudentLayoutProps) => {
                 <DropdownMenuItem>
                   <Link to="/student/dashboard" className="flex items-center w-full">
                     <Home size={16} className="mr-2" />
-                    Dashboard
+                    Beranda
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Link to="/student/loans" className="flex items-center w-full">
                     <BookOpenText size={16} className="mr-2" />
-                    My Loans
+                    Peminjaman Saya
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
                   <LogOut size={16} className="mr-2" />
-                  Logout
+                  Keluar
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -145,7 +145,7 @@ const StudentLayout = ({ children, title }: StudentLayoutProps) => {
             }`}
           >
             <Home size={20} />
-            <span className="text-xs mt-1">Home</span>
+            <span className="text-xs mt-1">Beranda</span>
           </Link>
           <Link
             to="/student/catalog"
@@ -154,7 +154,7 @@ const StudentLayout = ({ children, title }: StudentLayoutProps) => {
             }`}
           >
             <Book size={20} />
-            <span className="text-xs mt-1">Catalog</span>
+            <span className="text-xs mt-1">Katalog</span>
           </Link>
           <Link
             to="/student/loans"
@@ -163,7 +163,7 @@ const StudentLayout = ({ children, title }: StudentLayoutProps) => {
             }`}
           >
             <FileText size={20} />
-            <span className="text-xs mt-1">Loans</span>
+            <span className="text-xs mt-1">Peminjaman</span>
           </Link>
         </div>
       </div>
@@ -185,12 +185,12 @@ const StudentLayout = ({ children, title }: StudentLayoutProps) => {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-sm text-gray-500 mb-4 md:mb-0">
-              © 2023 School Library System
+              © 2023 Sistem Perpustakaan Sekolah
             </div>
             <div className="flex space-x-4">
-              <a href="#" className="text-sm text-gray-600 hover:text-blue-500 transition-colors">Privacy Policy</a>
-              <a href="#" className="text-sm text-gray-600 hover:text-blue-500 transition-colors">Terms of Use</a>
-              <a href="#" className="text-sm text-gray-600 hover:text-blue-500 transition-colors">Help Center</a>
+              <a href="#" className="text-sm text-gray-600 hover:text-blue-500 transition-colors">Kebijakan Privasi</a>
+              <a href="#" className="text-sm text-gray-600 hover:text-blue-500 transition-colors">Syarat Penggunaan</a>
+              <a href="#" className="text-sm text-gray-600 hover:text-blue-500 transition-colors">Pusat Bantuan</a>
             </div>
           </div>
         </div>

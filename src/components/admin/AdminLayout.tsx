@@ -34,9 +34,9 @@ const AdminLayout = ({ children, title }: AdminLayoutProps) => {
               <div className="flex items-center">
                 <Link to="/admin/dashboard" className="flex items-center">
                   <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center mr-2">
-                    <span className="text-white text-xs font-bold">L</span>
+                    <span className="text-white text-xs font-bold">P</span>
                   </div>
-                  <span className="text-lg font-medium hidden sm:inline">Library Admin</span>
+                  <span className="text-lg font-medium hidden sm:inline">Admin Perpustakaan</span>
                 </Link>
               </div>
             </div>
@@ -55,21 +55,21 @@ const AdminLayout = ({ children, title }: AdminLayoutProps) => {
                 className={`text-sm font-medium ${isActive('/admin/books') ? 'text-blue-500' : 'text-gray-700 hover:text-blue-500'} transition-colors flex items-center gap-1`}
               >
                 <Book size={16} />
-                Books
+                Buku
               </Link>
               <Link 
                 to="/admin/loans" 
                 className={`text-sm font-medium ${isActive('/admin/loans') ? 'text-blue-500' : 'text-gray-700 hover:text-blue-500'} transition-colors flex items-center gap-1`}
               >
                 <FileText size={16} />
-                Loans
+                Peminjaman
               </Link>
               <Link 
                 to="/admin/reports" 
                 className={`text-sm font-medium ${isActive('/admin/reports') ? 'text-blue-500' : 'text-gray-700 hover:text-blue-500'} transition-colors flex items-center gap-1`}
               >
                 <FileText size={16} />
-                Reports
+                Laporan
               </Link>
             </nav>
 
@@ -88,29 +88,29 @@ const AdminLayout = ({ children, title }: AdminLayoutProps) => {
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-80">
-                  <div className="p-2 font-medium">Notifications</div>
+                  <div className="p-2 font-medium">Notifikasi</div>
                   <DropdownMenuSeparator />
                   <div className="p-4 text-sm text-gray-500">
-                    <div className="mb-2 text-red-500 font-medium">Overdue Books</div>
+                    <div className="mb-2 text-red-500 font-medium">Buku Terlambat</div>
                     <ul className="space-y-2">
                       <li className="flex justify-between">
                         <span>Emma Watson - "The Great Gatsby"</span>
-                        <span className="text-red-500">7 days</span>
+                        <span className="text-red-500">7 hari</span>
                       </li>
                       <li className="flex justify-between">
                         <span>John Smith - "To Kill a Mockingbird"</span>
-                        <span className="text-red-500">3 days</span>
+                        <span className="text-red-500">3 hari</span>
                       </li>
                       <li className="flex justify-between">
                         <span>Sarah Johnson - "1984"</span>
-                        <span className="text-red-500">5 days</span>
+                        <span className="text-red-500">5 hari</span>
                       </li>
                     </ul>
                   </div>
                   <DropdownMenuSeparator />
                   <div className="p-2 text-center">
                     <button className="text-sm text-blue-500 hover:text-blue-700 transition-colors">
-                      View all notifications
+                      Lihat semua notifikasi
                     </button>
                   </div>
                 </DropdownMenuContent>
@@ -130,14 +130,14 @@ const AdminLayout = ({ children, title }: AdminLayoutProps) => {
                   <DropdownMenuItem>
                     <Link to="/admin/settings" className="flex items-center w-full">
                       <Settings size={16} className="mr-2" />
-                      Account Settings
+                      Pengaturan Akun
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
                     <Link to="/" className="flex items-center w-full">
                       <LogOut size={16} className="mr-2" />
-                      Logout
+                      Keluar
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -164,12 +164,12 @@ const AdminLayout = ({ children, title }: AdminLayoutProps) => {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-sm text-gray-500 mb-4 md:mb-0">
-              Last Synced: {new Date().toLocaleTimeString()}
+              Terakhir Diperbarui: {new Date().toLocaleTimeString()}
             </div>
             <div className="flex space-x-4">
-              <a href="#" className="text-sm text-gray-600 hover:text-blue-500 transition-colors">Help Center</a>
-              <a href="#" className="text-sm text-gray-600 hover:text-blue-500 transition-colors">Inventory Guide</a>
-              <a href="#" className="text-sm text-gray-600 hover:text-blue-500 transition-colors">Contact IT</a>
+              <a href="#" className="text-sm text-gray-600 hover:text-blue-500 transition-colors">Pusat Bantuan</a>
+              <a href="#" className="text-sm text-gray-600 hover:text-blue-500 transition-colors">Panduan Inventaris</a>
+              <a href="#" className="text-sm text-gray-600 hover:text-blue-500 transition-colors">Hubungi IT</a>
             </div>
           </div>
         </div>

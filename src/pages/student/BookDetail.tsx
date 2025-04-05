@@ -28,18 +28,18 @@ const BookDetail = () => {
   // If book not found
   if (!book) {
     return (
-      <StudentLayout title="Book Not Found">
+      <StudentLayout title="Buku Tidak Ditemukan">
         <NotFoundBook />
       </StudentLayout>
     );
   }
   
   return (
-    <StudentLayout title="Book Details">
+    <StudentLayout title="Detail Buku">
       <div className="mb-4">
         <Link to="/student/catalog" className="text-blue-500 hover:text-blue-700 flex items-center">
           <ArrowLeft size={16} className="mr-1" />
-          Back to Catalog
+          Kembali ke Katalog
         </Link>
       </div>
       
@@ -49,9 +49,9 @@ const BookDetail = () => {
       {/* Tabs for Details, Reviews, etc. */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
         <TabsList className="w-full max-w-md mb-6">
-          <TabsTrigger value="details" className="flex-1">Details</TabsTrigger>
-          <TabsTrigger value="reviews" className="flex-1">Reviews</TabsTrigger>
-          <TabsTrigger value="related" className="flex-1">Related Books</TabsTrigger>
+          <TabsTrigger value="details" className="flex-1">Detail</TabsTrigger>
+          <TabsTrigger value="reviews" className="flex-1">Ulasan</TabsTrigger>
+          <TabsTrigger value="related" className="flex-1">Buku Terkait</TabsTrigger>
         </TabsList>
         
         {/* Details Tab */}
