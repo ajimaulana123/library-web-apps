@@ -1,4 +1,5 @@
 import express from 'express';
+import type { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import cors from 'cors';
 
@@ -8,8 +9,21 @@ const prisma = new PrismaClient();
 app.use(cors());
 app.use(express.json());
 
+interface BookRequest {
+  title: string;
+  author: string;
+  isbn?: string;
+  publishedYear?: string;
+  genre: string;
+  status?: string;
+  condition: string;
+  quantity?: number;
+  description?: string;
+  coverUrl?: string;
+}
+
 // Create a new book
-app.post('/api/books', async (req, res) => {
+app.post('/api/books', async (req: Request, res: Response): Promise<void> => {
   try {
     const {
       title,
@@ -22,13 +36,14 @@ app.post('/api/books', async (req, res) => {
       quantity,
       description,
       coverUrl
-    } = req.body;
+    } = req.body as BookRequest;
 
     // Validate required fields
     if (!title || !author || !genre || !condition) {
-      return res.status(400).json({ 
+      res.status(400).json({ 
         error: 'Missing required fields: title, author, genre, and condition are required' 
       });
+      return;
     }
 
     const book = await prisma.book.create({
@@ -54,7 +69,7 @@ app.post('/api/books', async (req, res) => {
 });
 
 // Get all books
-app.get('/api/books', async (_req, res) => {
+app.get('/api/books', async (_req: Request, res: Response): Promise<void> => {
   try {
     const books = await prisma.book.findMany({
       orderBy: {
@@ -69,7 +84,7 @@ app.get('/api/books', async (_req, res) => {
 });
 
 // Update a book
-app.put('/api/books/:id', async (req, res) => {
+app.put('/api/books/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const book = await prisma.book.update({
@@ -84,7 +99,7 @@ app.put('/api/books/:id', async (req, res) => {
 });
 
 // Delete a book
-app.delete('/api/books/:id', async (req, res) => {
+app.delete('/api/books/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     await prisma.book.delete({
