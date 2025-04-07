@@ -2,9 +2,12 @@ import express from 'express';
 import type { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import cors from 'cors';
+import { put } from '@vercel/blob';
+import multer from 'multer';
 
 const app = express();
 const prisma = new PrismaClient();
+const upload = multer();
 
 app.use(cors());
 app.use(express.json());
@@ -21,6 +24,25 @@ interface BookRequest {
   description?: string;
   coverUrl?: string;
 }
+
+// Upload image to Vercel Blob
+app.post('/api/upload', upload.single('file'), async (req: Request, res: Response): Promise<void> => {
+  try {
+    if (!req.file) {
+      res.status(400).json({ error: 'No file uploaded' });
+      return;
+    }
+
+    const blob = await put(req.file.originalname, req.file.buffer, {
+      access: 'public',
+    });
+
+    res.json({ url: blob.url });
+  } catch (error) {
+    console.error('Error uploading file:', error);
+    res.status(500).json({ error: 'Failed to upload file' });
+  }
+});
 
 // Create a new book
 app.post('/api/books', async (req: Request, res: Response): Promise<void> => {

@@ -93,16 +93,32 @@ const BookForm = () => {
   };
   
   // Handle image upload
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const result = reader.result as string;
-        setPreviewImage(result);
-        setFormData(prev => ({ ...prev, coverUrl: result }));
-      };
-      reader.readAsDataURL(file);
+      try {
+        // Create FormData
+        const formData = new FormData();
+        formData.append('file', file);
+
+        // Upload to server
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to upload image');
+        }
+
+        const data = await response.json();
+        setPreviewImage(URL.createObjectURL(file));
+        setFormData(prev => ({ ...prev, coverUrl: data.url }));
+        toast.success('Gambar berhasil diunggah!');
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        toast.error('Gagal mengunggah gambar. Silakan coba lagi.');
+      }
     }
   };
   
