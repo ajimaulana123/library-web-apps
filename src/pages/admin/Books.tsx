@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,64 +34,56 @@ import {
   PaginationPrevious 
 } from '@/components/ui/pagination';
 import { Link } from 'react-router-dom';
+import { prisma } from '@/lib/db';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-// Sample book data
-const sampleBooks = [
-  {
-    id: '1',
-    title: 'To Kill a Mockingbird',
-    author: 'Harper Lee',
-    genre: 'Fiksi',
-    status: 'Tersedia',
-    condition: 'Baik',
-    coverUrl: 'https://m.media-amazon.com/images/I/71FxgtFKcQL._AC_UF1000,1000_QL80_.jpg'
-  },
-  {
-    id: '2',
-    title: '1984',
-    author: 'George Orwell',
-    genre: 'Fiksi Ilmiah',
-    status: 'Dipinjam',
-    condition: 'Cukup',
-    coverUrl: 'https://m.media-amazon.com/images/I/71kxa1-0mfL._AC_UF1000,1000_QL80_.jpg'
-  },
-  {
-    id: '3',
-    title: 'The Great Gatsby',
-    author: 'F. Scott Fitzgerald',
-    genre: 'Fiksi',
-    status: 'Tersedia',
-    condition: 'Sangat Baik',
-    coverUrl: 'https://m.media-amazon.com/images/I/71FTb9X6wsL._AC_UF1000,1000_QL80_.jpg'
-  },
-  {
-    id: '4',
-    title: 'Harry Potter and the Philosopher\'s Stone',
-    author: 'J.K. Rowling',
-    genre: 'Fantasi',
-    status: 'Dipinjam',
-    condition: 'Baik',
-    coverUrl: 'https://m.media-amazon.com/images/I/81iqZ2HHD-L._AC_UF1000,1000_QL80_.jpg'
-  },
-  {
-    id: '5',
-    title: 'The Hobbit',
-    author: 'J.R.R. Tolkien',
-    genre: 'Fantasi',
-    status: 'Tersedia',
-    condition: 'Baik',
-    coverUrl: 'https://m.media-amazon.com/images/I/91b0C2YNSrL._AC_UF1000,1000_QL80_.jpg'
-  }
-];
+// Type for Book
+type Book = {
+  id: string;
+  title: string;
+  author: string;
+  genre: string;
+  status: string;
+  condition: string;
+  coverUrl: string | null;
+};
 
 const Books = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all_statuses');
   const [genreFilter, setGenreFilter] = useState('all_genres');
   const [conditionFilter, setConditionFilter] = useState('all_conditions');
-  
+  const queryClient = useQueryClient();
+
+  // Fetch books query
+  const { data: books = [], isLoading } = useQuery<Book[]>({
+    queryKey: ['books'],
+    queryFn: async () => {
+      const response = await fetch('/api/books');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    },
+  });
+
+  // Delete book mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (bookId: string) => {
+      const response = await fetch(`/api/books/${bookId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete book');
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['books'] });
+    },
+  });
+
   // Filter books based on search and filters
-  const filteredBooks = sampleBooks.filter(book => {
+  const filteredBooks = books.filter(book => {
     const matchesSearch = book.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                          book.author.toLowerCase().includes(searchQuery.toLowerCase());
     
@@ -102,6 +93,26 @@ const Books = () => {
     
     return matchesSearch && matchesStatus && matchesGenre && matchesCondition;
   });
+
+  const handleDeleteBook = async (bookId: string) => {
+    if (window.confirm('Are you sure you want to delete this book?')) {
+      try {
+        await deleteMutation.mutateAsync(bookId);
+      } catch (error) {
+        console.error('Error deleting book:', error);
+      }
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <AdminLayout title="Manajemen Buku">
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout title="Manajemen Buku">
@@ -188,11 +199,13 @@ const Books = () => {
               <TableRow key={book.id}>
                 <TableCell>
                   <div className="w-12 h-16 bg-gray-100 rounded overflow-hidden">
-                    <img 
-                      src={book.coverUrl} 
-                      alt={`Sampul ${book.title}`} 
-                      className="w-full h-full object-cover"
-                    />
+                    {book.coverUrl && (
+                      <img 
+                        src={book.coverUrl} 
+                        alt={`Sampul ${book.title}`} 
+                        className="w-full h-full object-cover"
+                      />
+                    )}
                   </div>
                 </TableCell>
                 <TableCell className="font-medium">{book.title}</TableCell>
@@ -216,7 +229,12 @@ const Books = () => {
                         <Edit size={16} className="text-blue-500" />
                       </Link>
                     </Button>
-                    <Button variant="ghost" size="sm">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => handleDeleteBook(book.id)}
+                      disabled={deleteMutation.isPending}
+                    >
                       <Trash2 size={16} className="text-red-500" />
                     </Button>
                   </div>
@@ -230,7 +248,7 @@ const Books = () => {
       {/* Pagination */}
       <div className="flex justify-between items-center">
         <p className="text-sm text-gray-500">
-          Menampilkan <span className="font-medium">1</span> hingga <span className="font-medium">{filteredBooks.length}</span> dari <span className="font-medium">{sampleBooks.length}</span> buku
+          Menampilkan <span className="font-medium">1</span> hingga <span className="font-medium">{filteredBooks.length}</span> dari <span className="font-medium">{books.length}</span> buku
         </p>
         
         <Pagination>

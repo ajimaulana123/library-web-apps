@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/admin/AdminLayout';
@@ -15,6 +14,7 @@ import {
 } from '@/components/ui/select';
 import { ArrowLeft, Upload, Barcode } from 'lucide-react';
 import { toast } from 'sonner';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 // Sample book for edit mode
 const sampleBook = {
@@ -33,27 +33,53 @@ const sampleBook = {
 const BookForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const isEditMode = !!id;
   
-  // Initialize form state
-  const [formData, setFormData] = useState(
-    isEditMode 
-      ? sampleBook 
-      : {
-          title: '',
-          author: '',
-          isbn: '',
-          publishedYear: '',
-          genre: '',
-          description: '',
-          quantity: 1,
-          condition: 'Good',
-          coverUrl: ''
-        }
-  );
+  // Initialize form state to match Prisma schema
+  const [formData, setFormData] = useState({
+    title: '',
+    author: '',
+    isbn: '',
+    publishedYear: '',
+    genre: '',
+    status: 'Tersedia',
+    condition: 'Baik',
+    quantity: 1,
+    description: '',
+    coverUrl: ''
+  });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [previewImage, setPreviewImage] = useState<string | null>(isEditMode ? sampleBook.coverUrl : null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  
+  // Create book mutation
+  const createBookMutation = useMutation({
+    mutationFn: async (bookData: typeof formData) => {
+      const response = await fetch('/api/books', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookData),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to create book');
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['books'] });
+      toast.success('Buku berhasil ditambahkan!');
+      navigate('/admin/books');
+    },
+    onError: (error) => {
+      console.error('Error creating book:', error);
+      toast.error('Gagal menambahkan buku. Silakan coba lagi.');
+    },
+  });
   
   // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -81,16 +107,13 @@ const BookForm = () => {
   };
   
   // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
-      toast.success(isEditMode ? 'Book updated successfully!' : 'Book added successfully!');
-      navigate('/admin/books');
-    }, 1000);
+    try {
+      await createBookMutation.mutateAsync(formData);
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    }
   };
   
   // Handle ISBN scanner
@@ -102,7 +125,7 @@ const BookForm = () => {
   };
   
   return (
-    <AdminLayout title={isEditMode ? 'Edit Book' : 'Add New Book'}>
+    <AdminLayout title={isEditMode ? 'Edit Buku' : 'Tambah Buku Baru'}>
       <div className="max-w-4xl mx-auto">
         <Button 
           variant="ghost" 
@@ -110,7 +133,7 @@ const BookForm = () => {
           onClick={() => navigate('/admin/books')}
         >
           <ArrowLeft size={16} className="mr-2" />
-          Back to Books
+          Kembali ke Daftar Buku
         </Button>
         
         <div className="bg-white rounded-lg shadow p-6">
@@ -129,8 +152,8 @@ const BookForm = () => {
                     ) : (
                       <div className="flex flex-col items-center justify-center p-4 text-center">
                         <Upload size={40} className="text-gray-400 mb-2" />
-                        <p className="text-sm text-gray-500">Upload cover image</p>
-                        <p className="text-xs text-gray-400 mt-1">JPG, PNG or GIF</p>
+                        <p className="text-sm text-gray-500">Upload sampul buku</p>
+                        <p className="text-xs text-gray-400 mt-1">JPG, PNG atau GIF</p>
                       </div>
                     )}
                   </div>
@@ -145,7 +168,7 @@ const BookForm = () => {
                     htmlFor="coverImage"
                     className="cursor-pointer text-sm text-blue-600 hover:text-blue-800"
                   >
-                    {previewImage ? 'Change Image' : 'Upload Image'}
+                    {previewImage ? 'Ganti Gambar' : 'Upload Gambar'}
                   </Label>
                 </div>
               </div>
@@ -179,26 +202,26 @@ const BookForm = () => {
                   
                   {/* Title */}
                   <div className="col-span-2">
-                    <Label htmlFor="title">Title</Label>
+                    <Label htmlFor="title">Judul</Label>
                     <Input
                       id="title"
                       name="title"
                       value={formData.title}
                       onChange={handleChange}
-                      placeholder="Enter book title"
+                      placeholder="Masukkan judul buku"
                       required
                     />
                   </div>
                   
                   {/* Author */}
                   <div>
-                    <Label htmlFor="author">Author</Label>
+                    <Label htmlFor="author">Penulis</Label>
                     <Input
                       id="author"
                       name="author"
                       value={formData.author}
                       onChange={handleChange}
-                      placeholder="Enter author name"
+                      placeholder="Masukkan nama penulis"
                       required
                     />
                   </div>
@@ -223,35 +246,33 @@ const BookForm = () => {
                       onValueChange={(value) => handleSelectChange('genre', value)}
                     >
                       <SelectTrigger id="genre">
-                        <SelectValue placeholder="Select genre" />
+                        <SelectValue placeholder="Pilih genre" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Fiction">Fiction</SelectItem>
-                        <SelectItem value="Non-Fiction">Non-Fiction</SelectItem>
-                        <SelectItem value="Science Fiction">Science Fiction</SelectItem>
-                        <SelectItem value="Fantasy">Fantasy</SelectItem>
-                        <SelectItem value="Biography">Biography</SelectItem>
-                        <SelectItem value="History">History</SelectItem>
-                        <SelectItem value="Poetry">Poetry</SelectItem>
+                        <SelectItem value="Fiksi">Fiksi</SelectItem>
+                        <SelectItem value="Non-Fiksi">Non-Fiksi</SelectItem>
+                        <SelectItem value="Fiksi Ilmiah">Fiksi Ilmiah</SelectItem>
+                        <SelectItem value="Fantasi">Fantasi</SelectItem>
+                        <SelectItem value="Biografi">Biografi</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   
                   {/* Condition */}
                   <div>
-                    <Label htmlFor="condition">Condition</Label>
+                    <Label htmlFor="condition">Kondisi</Label>
                     <Select 
                       value={formData.condition}
                       onValueChange={(value) => handleSelectChange('condition', value)}
                     >
                       <SelectTrigger id="condition">
-                        <SelectValue placeholder="Select condition" />
+                        <SelectValue placeholder="Pilih kondisi" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Excellent">Excellent</SelectItem>
-                        <SelectItem value="Good">Good</SelectItem>
-                        <SelectItem value="Fair">Fair</SelectItem>
-                        <SelectItem value="Poor">Poor</SelectItem>
+                        <SelectItem value="Sangat Baik">Sangat Baik</SelectItem>
+                        <SelectItem value="Baik">Baik</SelectItem>
+                        <SelectItem value="Cukup">Cukup</SelectItem>
+                        <SelectItem value="Buruk">Buruk</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -295,8 +316,12 @@ const BookForm = () => {
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Saving...' : isEditMode ? 'Update Book' : 'Add Book'}
+              <Button 
+                type="submit" 
+                className="w-full"
+                disabled={createBookMutation.isPending}
+              >
+                {createBookMutation.isPending ? 'Menambahkan Buku...' : 'Tambah Buku'}
               </Button>
             </div>
           </form>
